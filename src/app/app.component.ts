@@ -7,11 +7,11 @@ import { ApiService } from './services/api.service';
 import { AuthenticationService } from './services/authentication.service';
 import { UtilitiesService } from './services/utilities.service';
 import {
-    ActionPerformed,
-    PushNotificationSchema,
-    PushNotifications,
-    Token,
-  } from '@capacitor/push-notifications';
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications';
 import { NotificacionesNuevasService } from './services/notificaciones-nuevas.service';
 import { environment } from 'src/environments/environment';
 import { Stripe } from '@awesome-cordova-plugins/stripe/ngx';
@@ -49,52 +49,52 @@ export class AppComponent {
     private navCtrl: NavController,
     private storage: Storage,
     private utilities: UtilitiesService,
-    private notificationsService : NotificacionesNuevasService,
+    private notificationsService: NotificacionesNuevasService,
     private stripe: Stripe
 
-  ) {}
+  ) { }
 
 
-  
-/**
-   * Nos suscribimos a los cambios dle perfil
-   */
-public async ngOnInit() {
-  this.auth.authenticationState.subscribe(token => {
-    if (token != 'logout' && token != '') {
-      console.log("CAMBIA TOKEN ", token);
-      
-      this.pushNotifications();
-      this.prepararStripe();
-      this.apiService.setTokenToHeaders(token);
-      this.navCtrl.navigateRoot('tabs').then(() => {
-        this.isLoading = false;
-      });
-    } else if (token == 'logout') {
-      //this.apiService.removeTokenToHeaders();
-      this.navCtrl.navigateRoot('cover-page').then(() => {
-        this.isLoading = false;
-      });
-    } else {
+
+  /**
+     * Nos suscribimos a los cambios dle perfil
+     */
+  public async ngOnInit() {
+    this.auth.authenticationState.subscribe(token => {
+      // if (token != 'logout' && token != '') {
+      //   console.log("CAMBIA TOKEN ", token);
+
+      //   this.pushNotifications();
+      //   this.prepararStripe();
+      //   this.apiService.setTokenToHeaders(token);
+      //   this.navCtrl.navigateRoot('tabs').then(() => {
+      //     this.isLoading = false;
+      //   });
+      // } else if (token == 'logout') {
+      //   //this.apiService.removeTokenToHeaders();
+      //   this.navCtrl.navigateRoot('cover-page').then(() => {
+      //     this.isLoading = false;
+      //   });
+      // } else {
       this.isLoading = false;
       console.log("primera vez");
-      
+
+      // }
+
+      // IMPORTANTE: para comprobar si la app está o no suspendida, debe ponerse el dominio en la propiedad "domainUrl" del archivo "src/environments/environment.ts"
+      this.checkIfAppIsSuspended();
+    });
+
+    if (this.platform.is('cordova')) {
+      this.platform.ready().then(() => {
+
+      });
     }
 
-    // IMPORTANTE: para comprobar si la app está o no suspendida, debe ponerse el dominio en la propiedad "domainUrl" del archivo "src/environments/environment.ts"
-    this.checkIfAppIsSuspended();
-  });
-
-  if (this.platform.is('cordova')) {
-    this.platform.ready().then(() => {
-   
+    this.apiService.userChanges.subscribe((user: User) => {
+      this.user = user;
     });
   }
-
-  this.apiService.userChanges.subscribe((user: User) => {
-    this.user = user;
-  });
-}
 
 
   public checkIfAppIsSuspended() {
@@ -109,67 +109,67 @@ public async ngOnInit() {
   }
 
 
-  public pushNotifications(){
+  public pushNotifications() {
     PushNotifications.requestPermissions().then(async result => {
       if (result.receive === 'granted') {
-      // Register with Apple / Google to receive push via APNS/FCM
-      const regId = await PushNotifications.register();
+        // Register with Apple / Google to receive push via APNS/FCM
+        const regId = await PushNotifications.register();
 
-      
+
       } else {
         console.log("error de permisos");
-        
-       // Show some error
+
+        // Show some error
       }
     });
 
     PushNotifications.addListener('registration',
-      (token: Token) => {
-      console.log('Push registration success, token: ' + token.value);
+      (token: Token) => {
+        console.log('Push registration success, token: ' + token.value);
 
-        this.apiService.guardarTokenDeRegistro(token.value).subscribe((response)=>{
-          console.log("response" , response);
+        this.apiService.guardarTokenDeRegistro(token.value).subscribe((response) => {
+          console.log("response", response);
 
-          
-        }, (error)=>{
-          console.log("error" , error);
-          
+
+        }, (error) => {
+          console.log("error", error);
+
         })
-      }
-    );
+      }
+    );
 
 
 
 
-  PushNotifications.addListener('registrationError', (error: any) => {
-        alert('Error on registration: ' + JSON.stringify(error));
-  });
-  
-  PushNotifications.addListener(
-          'pushNotificationReceived',
-          (notification: PushNotificationSchema) => {
-            alert('Push received: ' + JSON.stringify(notification));
-            this.notificationsService.addNotification(notification);
-            PushNotifications.removeAllDeliveredNotifications();
+    PushNotifications.addListener('registrationError', (error: any) => {
+      alert('Error on registration: ' + JSON.stringify(error));
+    });
 
-          },
-  );   
-  
     PushNotifications.addListener(
-            'pushNotificationActionPerformed',
-            (notification: ActionPerformed) => {
-              alert('Push action performed: ' + JSON.stringify(notification));
-            },
-    );   
+      'pushNotificationReceived',
+      (notification: PushNotificationSchema) => {
+        alert('Push received: ' + JSON.stringify(notification));
+        this.notificationsService.addNotification(notification);
+        PushNotifications.removeAllDeliveredNotifications();
+
+      },
+    );
+
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (notification: ActionPerformed) => {
+        alert('Push action performed: ' + JSON.stringify(notification));
+      },
+    );
 
 
 
   }
 
-  public async prepararStripe(){
-    
+  public async prepararStripe() {
+
     const tokenStripe = await this.stripe.setPublishableKey(environment.stripePublishableKey);
-    
+
     console.log("token stripe ", tokenStripe);
 
 
@@ -180,8 +180,8 @@ public async ngOnInit() {
       cvc: '220'
     }
 
-this.stripe.createCardToken(card)
-   .then(token => console.log(token.id))
-   .catch(error => console.error(error));
+    this.stripe.createCardToken(card)
+      .then(token => console.log(token.id))
+      .catch(error => console.error(error));
   }
 }

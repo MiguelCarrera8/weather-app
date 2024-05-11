@@ -1,9 +1,11 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>home</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-loading [text]="'Cargando información...'" [color]="'dark'" *ngIf="isLoading"></app-loading>
 
-<ion-content class="ion-text-center">
-  <h2>Bienvenido al Ionic </h2>
+<ion-content class="ion-text-center" *ngIf="!isLoading">
+  <div class="container">
+    <p class="name">{{weather?.location?.name}}</p>
+    <p class="temp">{{weather?.current?.temp_c}}°</p>
+    <p class="language">{{weather?.current?.condition?.language}}</p>
+    <ion-icon [src]="weather?.current?.condition?.icon" alt=""></ion-icon>
+  </div>
+
 </ion-content>

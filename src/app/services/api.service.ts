@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/User';
 import { UtilitiesService } from './utilities.service';
@@ -102,7 +102,7 @@ export class ApiService {
    */
   public guardarTokenDeRegistro(tokenRegistro) {
     return this.http.post(environment.apiUrl + 'guardar-token', { registerToken: tokenRegistro, platform: this.utilities.getPlatform() }, this.httpOptions);
-  } 
+  }
 
   /**
  * Método para procesar el pago stripe
@@ -119,75 +119,108 @@ export class ApiService {
   // Como obtener los productos por ejemplo:
   // this.apiService.getEntity('productos').subscribe((productos:Productos)=>{console.log(productos)});
 
-  
-// ====================== Obtener entidades ================================
 
-public getEntity(entity: string, id?: number): any {
-  if (id)
-    return this.http.get(environment.apiUrl + entity + '/' + id, this.httpOptions);
-  else
-    return this.http.get(environment.apiUrl + entity, this.httpOptions);
-}
+  // ====================== Obtener entidades ================================
 
-public getSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity?: number): any {
-  if (idSubEntity)
-    return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity, this.httpOptions);
-  else
-    return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity, this.httpOptions);
-}
+  public getEntity(entity: string, id?: number): any {
+    if (id)
+      return this.http.get(environment.apiUrl + entity + '/' + id, this.httpOptions);
+    else
+      return this.http.get(environment.apiUrl + entity, this.httpOptions);
+  }
 
-public getSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, idSubSubEntity?: number): any {
-  if (idSubSubEntity)
-    return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity + '/' + idSubSubEntity, this.httpOptions);
-  else
-    return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity, this.httpOptions);
-}
+  public getSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity?: number): any {
+    if (idSubEntity)
+      return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity, this.httpOptions);
+    else
+      return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity, this.httpOptions);
+  }
 
-
-// ====================== Añadir entidades ================================
+  public getSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, idSubSubEntity?: number): any {
+    if (idSubSubEntity)
+      return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity + '/' + idSubSubEntity, this.httpOptions);
+    else
+      return this.http.get(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity, this.httpOptions);
+  }
 
 
-public addEntity(entity: string, params: any): any {
-  return this.http.post(environment.apiUrl + entity, params, this.httpOptions);
-}
-
-public addSubEntity(entity: string, idEntity: number, subEntity: string, params?: any): any {
-  return this.http.post(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity, params, this.httpOptions);
-}
-
-public addSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, params?: any): any {
-  return this.http.post(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity, params, this.httpOptions);
-}
+  // ====================== Añadir entidades ================================
 
 
-// ====================== Borrar entidades ================================
+  public addEntity(entity: string, params: any): any {
+    return this.http.post(environment.apiUrl + entity, params, this.httpOptions);
+  }
+
+  public addSubEntity(entity: string, idEntity: number, subEntity: string, params?: any): any {
+    return this.http.post(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity, params, this.httpOptions);
+  }
+
+  public addSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, params?: any): any {
+    return this.http.post(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity, params, this.httpOptions);
+  }
 
 
-public deleteEntity(entity: string, id: number): any {
-  return this.http.delete(environment.apiUrl + entity + '/' + id, this.httpOptions);
-}
-
-public deleteSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number): any {
-  return this.http.delete(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity, this.httpOptions);
-}
-
-public deleteSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, idSubSubEntity: number): any {
-  return this.http.delete(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity + '/' + idSubSubEntity, this.httpOptions);
-}
+  // ====================== Borrar entidades ================================
 
 
-// ====================== Actualizar entidades ================================
+  public deleteEntity(entity: string, id: number): any {
+    return this.http.delete(environment.apiUrl + entity + '/' + id, this.httpOptions);
+  }
+
+  public deleteSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number): any {
+    return this.http.delete(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity, this.httpOptions);
+  }
+
+  public deleteSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, idSubSubEntity: number): any {
+    return this.http.delete(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity + '/' + idSubSubEntity, this.httpOptions);
+  }
 
 
-public updateEntity(entity: string, id: number, params: any): any {
-  return this.http.put(environment.apiUrl + entity + '/' + id, params, this.httpOptions);
-}
+  // ====================== Actualizar entidades ================================
 
-public updateSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, params: any): any {
-  return this.http.put(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity, params, this.httpOptions);
-}
 
-public updateSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, params: any): any {
-  return this.http.put(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity, params, this.httpOptions);
-}
+  public updateEntity(entity: string, id: number, params: any): any {
+    return this.http.put(environment.apiUrl + entity + '/' + id, params, this.httpOptions);
+  }
+
+  public updateSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, params: any): any {
+    return this.http.put(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity, params, this.httpOptions);
+  }
+
+  public updateSubSubEntity(entity: string, idEntity: number, subEntity: string, idSubEntity: number, subSubEntity: string, params: any): any {
+    return this.http.put(environment.apiUrl + entity + '/' + idEntity + '/' + subEntity + '/' + idSubEntity + '/' + subSubEntity, params, this.httpOptions);
+  }
+
+  public getUserLocation(): any {
+    return this.http.get('https://ipinfo.io/json');
+  }
+
+  public getWeatherCity(city: string): any {
+
+    return this.http.get(`http://api.weatherapi.com/v1/current.json?key=${environment.weather_api}&q=${city}`, this.httpOptions);
+
+  }
+
+  public getWeatherLatLgn(latitude: string, longitude: string): any {
+
+    return this.http.get(`http://api.weatherapi.com/v1/current.json?key=${environment.weather_api}&q=${latitude},${longitude}`, this.httpOptions);
+
+  }
+
+  getFilteredData(code: number, isDay: number): Observable<any> {
+    return this.http.get<any[]>('assets/i18n/conditions.json').pipe(
+      map(data => {
+        const filteredEntry = data.find(item => item.code === code);
+        if (filteredEntry) {
+          const spanishLanguage = filteredEntry.languages.find(lang => lang.lang_name === 'Spanish');
+          if (spanishLanguage) {
+            return isDay === 1 ? spanishLanguage.day_text : spanishLanguage.night_text;
+          }
+        }
+        return null; // Devolver null si no se encuentra el código o el idioma español
+      })
+
+    );
+  }
+
 }

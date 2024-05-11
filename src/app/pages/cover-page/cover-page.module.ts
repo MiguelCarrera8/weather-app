@@ -17,4 +17,4 @@ import { CoverPagePage } from './cover-page.page';
   ],
   declarations: [CoverPagePage]
 })
-export class CoverPagePageModule {}
+export class CoverPagePageModule { }

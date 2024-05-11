@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+import { Storage } from '@ionic/storage-angular';
+
 
 @Component({
   selector: 'app-cover-page',
@@ -7,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CoverPagePage implements OnInit {
 
-  constructor() { }
+  constructor(
+    private apiService: ApiService,
+    private storage: Storage,
+  ) { }
 
   ngOnInit() {
+    this.apiService.getUserLocation().subscribe((response) => {
+      console.log(response);
+      this.storage.set('city', response.city);
+    })
   }
 
 }
